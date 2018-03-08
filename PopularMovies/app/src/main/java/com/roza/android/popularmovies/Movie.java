@@ -1,10 +1,11 @@
 package com.roza.android.popularmovies;
 
-/**
- * Created by Piotr on 22.02.2018.
- */
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Movie {
+
+
+public class Movie implements Parcelable {
 
     String title;
     String poster;
@@ -55,4 +56,38 @@ public class Movie {
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeString(this.poster);
+        dest.writeString(this.overview);
+        dest.writeDouble(this.userRating);
+        dest.writeString(this.releaseDate);
+    }
+
+    protected Movie(Parcel in) {
+        this.title = in.readString();
+        this.poster = in.readString();
+        this.overview = in.readString();
+        this.userRating = in.readDouble();
+        this.releaseDate = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

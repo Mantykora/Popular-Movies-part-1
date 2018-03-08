@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by Piotr on 02.03.2018.
- */
+
+
+
 
 public class DetailActivity extends Activity {
 
@@ -28,17 +28,20 @@ public class DetailActivity extends Activity {
         setContentView(R.layout.activity_detail);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra(MainActivity.TITLE);
-        String overview = intent.getStringExtra(MainActivity.OVERVIEW);
-        double userRating = intent.getDoubleExtra(MainActivity.USER_RATING, 1);
-        String releaseDate = intent.getStringExtra(MainActivity.RELASE_DATE);
-        String posterPath = intent.getStringExtra(MainActivity.POSTER_PATH);
+        Movie movie = intent.getParcelableExtra("movie");
+
+
+        String title = movie.getTitle();
+        String overview = movie.getOverview();
+        double userRating = movie.getUserRating();
+        String releaseDate = movie.getReleaseDate();
+        String posterPath = movie.getPoster();
 
         Log.i("DetailActivity.java", "" + title + overview + userRating + releaseDate + posterPath);
 
         PosterUrlString = "http://image.tmdb.org/t/p/w185" + posterPath;
 
-        titleTv = (TextView) findViewById(R.id.movie_title_tv);
+        titleTv = findViewById(R.id.movie_title_tv);
         titleTv.setText(title);
 
         userRatingTv = findViewById(R.id.user_rating_tv);

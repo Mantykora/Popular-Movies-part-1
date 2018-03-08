@@ -10,24 +10,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-/**
- * Created by Piotr on 19.02.2018.
- */
+
 
 public class NetworkUtils {
 
-    private static final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/discover/movie";
-
-    private static final String SORT_BY = "sort_by";
+    private static final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie";
 
     private static final String API = "api_key";
 
     private static final String YOUR_API_KEY = "";
 
-
     public static URL buildURL(String sortedOrder) {
+
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                .appendQueryParameter(SORT_BY, sortedOrder)
+                .appendPath(sortedOrder)
                 .appendQueryParameter(API, YOUR_API_KEY)
                 .build();
 
@@ -48,6 +44,8 @@ public class NetworkUtils {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
         try {
+            urlConnection.setConnectTimeout(7000);
+            urlConnection.setReadTimeout(12000);
             InputStream inputStream = urlConnection.getInputStream();
             Log.i("Network Utils", "input stream taken");
             Scanner scanner = new Scanner(inputStream);

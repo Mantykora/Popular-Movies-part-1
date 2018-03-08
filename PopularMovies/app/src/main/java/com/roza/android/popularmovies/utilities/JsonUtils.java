@@ -9,10 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Piotr on 22.02.2018.
- */
-
 public final class JsonUtils {
 
     public static List<Movie> parseJson(String json) throws JSONException {

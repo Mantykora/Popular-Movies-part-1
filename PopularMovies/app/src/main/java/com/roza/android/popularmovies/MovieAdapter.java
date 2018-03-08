@@ -12,9 +12,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-/**
- * Created by Piotr on 25.02.2018.
- */
 
 class MovieAdapter extends ArrayAdapter<Movie> {
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -23,18 +24,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    String orderPopular = "popularity.desc";
-    String orderVoteAverage = "vote_average.desc";
+    String orderPopular = "popular";
+    String orderVoteAverage = "top_rated";
     String SORT_ORDER = orderPopular;
 
     static private MovieAdapter movieAdapter;
     private static GridView gridView;
-    public static final String TITLE = "title";
-    public static final String OVERVIEW = "overview";
-    public static final String USER_RATING = "user rating";
-    public static final String RELASE_DATE = "release date";
-    public static final String POSTER_PATH = "poster path";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +47,12 @@ public class MainActivity extends AppCompatActivity {
                                     int position, long id) {
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 
+
                 Movie movie = movieAdapter.getItem(position);
+                intent.putExtra("movie", movie);
 
-                String title = movie.getTitle();
-                String overview = movie.getOverview();
-                double userRating = movie.getUserRating();
-                String releaseDate = movie.getReleaseDate();
-                String posterPath = movie.getPoster();
+                //https://www.101apps.co.za/index.php/articles/using-android-s-parcelable-class-a-tutorial.html I use this tutorial for parcelable implementation
 
-
-                intent.putExtra(TITLE, title);
-                intent.putExtra(OVERVIEW, overview);
-                intent.putExtra(USER_RATING, userRating);
-                intent.putExtra(RELASE_DATE, releaseDate);
-                intent.putExtra(POSTER_PATH, posterPath);
 
                 startActivity(intent);
 
