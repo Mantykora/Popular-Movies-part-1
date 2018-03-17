@@ -20,12 +20,14 @@ public class NetworkUtils {
 
     private static final String YOUR_API_KEY = "";
 
-    public static URL buildURL(String sortedOrder) {
+    public static URL buildURL(String sortedOrder, String movieId) {
 
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(movieId)
                 .appendPath(sortedOrder)
                 .appendQueryParameter(API, YOUR_API_KEY)
                 .build();
+
 
         URL url = null;
 

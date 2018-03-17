@@ -12,10 +12,20 @@ public class Movie implements Parcelable {
     String overview;
     double userRating;
     String releaseDate;
+    int id;
+
 
     public Movie() {
     }
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -69,6 +79,7 @@ public class Movie implements Parcelable {
         dest.writeString(this.overview);
         dest.writeDouble(this.userRating);
         dest.writeString(this.releaseDate);
+        dest.writeInt(this.id);
     }
 
     protected Movie(Parcel in) {
@@ -77,6 +88,7 @@ public class Movie implements Parcelable {
         this.overview = in.readString();
         this.userRating = in.readDouble();
         this.releaseDate = in.readString();
+        this.id = in.readInt();
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {

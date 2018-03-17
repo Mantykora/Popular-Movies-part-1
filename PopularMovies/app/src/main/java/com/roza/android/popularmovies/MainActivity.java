@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     String orderPopular = "popular";
     String orderVoteAverage = "top_rated";
     String SORT_ORDER = orderPopular;
+    String MOVIE_ID = "";
 
     static private MovieAdapter movieAdapter;
     private static GridView gridView;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 Movie movie = movieAdapter.getItem(position);
                 intent.putExtra("movie", movie);
 
-                //https://www.101apps.co.za/index.php/articles/using-android-s-parcelable-class-a-tutorial.html I use this tutorial for parcelable implementation
+                //https://www.101apps.co.za/index.php/articles/using-android-s-parcelable-class-a-tutorial.html I used this tutorial for parcelable implementation
 
 
                 startActivity(intent);
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         protected List<Movie> doInBackground(String... strings) {
 
 
-            URL movieUrl = NetworkUtils.buildURL(SORT_ORDER);
+            URL movieUrl = NetworkUtils.buildURL(SORT_ORDER, MOVIE_ID);
 
             Log.i("MainActivity", "movieUrl" + movieUrl);
 

@@ -18,6 +18,7 @@ public final class JsonUtils {
         final String PLOT_OVERVIEW = "overview";
         final String USER_RATING = "vote_average";
         final String RELEASE_DATE = "release_date";
+        final String MOVIE_ID = "id";
 
         final String RESULTS = "results";
 
@@ -36,6 +37,7 @@ public final class JsonUtils {
             movie.setOverview(movieObject.getString(PLOT_OVERVIEW));
             movie.setUserRating(movieObject.optDouble(USER_RATING));
             movie.setReleaseDate(movieObject.getString(RELEASE_DATE));
+            movie.setId(movieObject.getInt(MOVIE_ID));
 
             movies.add(movie);
         }
