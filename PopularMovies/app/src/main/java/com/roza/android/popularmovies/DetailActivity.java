@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.roza.android.popularmovies.utilities.CommentsJsonUtils;
 import com.roza.android.popularmovies.utilities.NetworkUtils;
 import com.roza.android.popularmovies.utilities.VideosJsonUtils;
 import com.squareup.picasso.Picasso;
@@ -24,6 +27,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,6 +45,12 @@ public class DetailActivity extends Activity {
 
     private static VideoAdapter videoAdapter;
 
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
+    private List<Comment> commentsList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -52,7 +62,22 @@ public class DetailActivity extends Activity {
         configureClickListener();
         trailersLstView.setClickable(true);
 
+
+        commentsList = new ArrayList<>();
+
+        recyclerView =  findViewById(R.id.comment_rv);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+
+        adapter = new CommentRecyclerViewAdapter(commentsList);
+
+
+
+
+
         loadVideoData();
+
 
 
 
@@ -171,7 +196,8 @@ public class DetailActivity extends Activity {
         listView.setLayoutParams(params);
     }
 
-    private void loadVideoData() { new videoTask(this).execute(); }
+    private void loadVideoData() { new videoTask(this).execute();
+    new CommentTask(this).execute();}
 
     public class videoTask extends AsyncTask<String, Void, List<Video>> {
 
@@ -220,6 +246,63 @@ public class DetailActivity extends Activity {
                 toast.show();
             }
 
+        }
+    }
+
+
+
+    public class CommentTask extends AsyncTask<String, Void, List<Comment>> {
+
+
+        private Context context;
+
+        public CommentTask(Context context) {
+            this.context = context;
+        }
+
+
+        List<Comment> parsedCommentList;
+
+        @Override
+        protected List<Comment> doInBackground(String... strings) {
+            URL commentsUrl = NetworkUtils.buildURL("reviews", StringId);
+
+            try {
+
+                String jsonCommentResponse = NetworkUtils.getResponseFromHttpUrl(commentsUrl);
+                parsedCommentList = CommentsJsonUtils.parseCommentJson(jsonCommentResponse);
+                Log.d("DetailActivity", jsonCommentResponse);
+                Log.i("DetailActivity", "list parsed "  + commentsUrl);
+                return parsedCommentList;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Comment> comments) {
+            //videoAdapter = new VideoAdapter(DetailActivity.this, videos);
+
+            if (comments != null && !comments.equals("")) {
+
+                //TODO set comment recycler view adapter
+
+
+//                adapter = new CommentRecyclerViewAdapter(comments);
+//                recyclerView.setAdapter(adapter);
+
+                adapter = new CommentRecyclerViewAdapter(comments);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+
+                Log.i("DetailActivity", "RecyclerView set");
+            } else {
+                Toast toast= Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     }
 

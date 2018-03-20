@@ -15,9 +15,9 @@ import java.util.List;
  * Created by hiddenpik on 11.03.2018.
  */
 
-public class ComentAdapter extends ArrayAdapter<Video> {
+public class CommentAdapter extends ArrayAdapter<Video> {
 
-    public ComentAdapter(Activity context, List<Video> videos) {
+    public CommentAdapter(Activity context, List<Video> videos) {
         super(context, 0, videos);
     }
 
