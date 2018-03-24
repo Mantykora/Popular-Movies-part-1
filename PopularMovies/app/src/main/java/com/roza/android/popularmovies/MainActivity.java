@@ -1,8 +1,12 @@
 package com.roza.android.popularmovies;
 
+
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,7 +26,7 @@ import com.roza.android.popularmovies.utilities.NetworkUtils;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Movie>> {
 
     String orderPopular = "popular";
     String orderVoteAverage = "top_rated";
@@ -41,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
         gridView = findViewById(R.id.grid_view);
 
         loadMovieData();
+
+        //LoaderCallbacks<List<Movie>> callback = MainActivity.this;
+
+        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,63 +72,118 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMovieData() {
-        new MovieTask(this).execute();
+        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
     }
 
-    public class MovieTask extends AsyncTask<String, Void, List<Movie>> {
-        ProgressDialog progressDialog;
-        private Context context;
-        List<Movie> parsedList;
-
-        public MovieTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected List<Movie> doInBackground(String... strings) {
+    @Override
+    public Loader<List<Movie>> onCreateLoader(int i, Bundle bundle) {
 
 
-            URL movieUrl = NetworkUtils.buildURL(SORT_ORDER, MOVIE_ID);
 
-            Log.i("MainActivity", "movieUrl" + movieUrl);
+        return new AsyncTaskLoader<List<Movie>>(this) {
 
-            try {
-                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieUrl);
-                parsedList = JsonUtils.parseJson(jsonMovieResponse);
-                Log.i("MainActivity", "Json list parsed");
-                return parsedList;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+            List<Movie> parsedList;
+
+            @Override
+            public List<Movie> loadInBackground() {
+
+                Log.d("MainActivity", "Load in background");
+                URL movieUrl = NetworkUtils.buildURL(SORT_ORDER, MOVIE_ID);
+
+                Log.i("MainActivity", "movieUrl" + movieUrl);
+
+                try {
+                    String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieUrl);
+                    parsedList = JsonUtils.parseJson(jsonMovieResponse);
+                    Log.i("MainActivity", "Json list parsed");
+                    return parsedList;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
             }
-        }
+        };
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Loading movies...");
-            progressDialog.setCancelable(true);
-            progressDialog.show();
-        }
+       // List<Movie> movies = null;
 
-        @Override
-        protected void onPostExecute(List<Movie> list) {
+    }
 
+    @Override
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movies) {
 
-            movieAdapter = new MovieAdapter(MainActivity.this, list);
-            progressDialog.cancel();
-            if (list != null && !list.equals("")) {
-                gridView.setAdapter(movieAdapter);
-                movieAdapter.notifyDataSetChanged();
-                Log.i("Main Activity", "gridView set");
-            } else {
-                Toast toast = Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_LONG);
-                toast.show();
-            }
-
+        movieAdapter = new MovieAdapter(MainActivity.this, movies);
+       // progressDialog.cancel();
+        if (movies != null && !movies.equals("")) {
+            gridView.setAdapter(movieAdapter);
+            movieAdapter.notifyDataSetChanged();
+            Log.i("Main Activity", "gridView set");
+        } else {
+            Toast toast = Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_LONG);
+            toast.show();
         }
     }
+
+    @Override
+    public void onLoaderReset(Loader<List<Movie>> loader) {
+
+    }
+
+//    public class MovieTask extends AsyncTask<String, Void, List<Movie>> {
+//        ProgressDialog progressDialog;
+//        private Context context;
+//        List<Movie> parsedList;
+//
+//        public MovieTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected List<Movie> doInBackground(String... strings) {
+//
+//
+//            URL movieUrl = NetworkUtils.buildURL(SORT_ORDER, MOVIE_ID);
+//
+//            Log.i("MainActivity", "movieUrl" + movieUrl);
+//
+//            try {
+//                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieUrl);
+//                parsedList = JsonUtils.parseJson(jsonMovieResponse);
+//                Log.i("MainActivity", "Json list parsed");
+//                return parsedList;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Loading movies...");
+//            progressDialog.setCancelable(true);
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<Movie> list) {
+//
+//
+//            movieAdapter = new MovieAdapter(MainActivity.this, list);
+//            progressDialog.cancel();
+//            if (list != null && !list.equals("")) {
+//                gridView.setAdapter(movieAdapter);
+//                movieAdapter.notifyDataSetChanged();
+//                Log.i("Main Activity", "gridView set");
+//            } else {
+//                Toast toast = Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_LONG);
+//                toast.show();
+//            }
+//
+//        }
+//    }
+
 
 
     @Override
@@ -139,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.sort_vote_average:
                 SORT_ORDER = orderVoteAverage;
-                loadMovieData();
+               loadMovieData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

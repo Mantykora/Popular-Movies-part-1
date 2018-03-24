@@ -76,7 +76,7 @@ public class DetailActivity extends Activity {
 
 
 
-        loadVideoData();
+
 
 
 
@@ -100,7 +100,7 @@ public class DetailActivity extends Activity {
         StringId = String.valueOf(id);;
 
 
-        Log.i("DetailActivity.java", "" + title + + '\n' + overview + '\n' + userRating + '\n' + releaseDate + '\n' + posterPath + '\n' + id);
+        Log.i("DetailActivity.java", "" + title + + '\n' + overview + '\n' + userRating + '\n' + releaseDate + '\n' + posterPath + '\n' + StringId);
 
         PosterUrlString = "http://image.tmdb.org/t/p/w185" + posterPath;
 
@@ -123,7 +123,7 @@ public class DetailActivity extends Activity {
 
 
 
-
+        loadVideoData();
 
 
 
@@ -199,58 +199,6 @@ public class DetailActivity extends Activity {
     private void loadVideoData() { new videoTask(this).execute();
     new CommentTask(this).execute();}
 
-    public class videoTask extends AsyncTask<String, Void, List<Video>> {
-
-        private Context context;
-
-        public videoTask(Context context) {
-            this.context = context;
-        }
-
-        List<Video> parsedList;
-
-
-        @Override
-        protected List<Video> doInBackground(String... strings) {
-
-            URL videosUrl = NetworkUtils.buildURL("videos", StringId);
-
-            try {
-
-                String jsonVideoResponse = NetworkUtils.getResponseFromHttpUrl(videosUrl);
-                parsedList = VideosJsonUtils.parseVideoJson(jsonVideoResponse);
-                Log.d("DetailActivity", jsonVideoResponse);
-                Log.i("DetailActivity", "list parsed "  + videosUrl);
-                return parsedList;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(List<Video> videos) {
-
-            videoAdapter = new VideoAdapter(DetailActivity.this, videos);
-
-            if (videos != null && !videos.equals("")) {
-                trailersLstView.setAdapter(videoAdapter);
-                videoAdapter.notifyDataSetChanged();
-                updateListViewHeight(trailersLstView);
-
-                Log.i("DetailActivity", "Trailer ListView set");
-             } else {
-                Toast toast= Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
-                toast.show();
-            }
-
-        }
-    }
-
-
-
     public class CommentTask extends AsyncTask<String, Void, List<Comment>> {
 
 
@@ -285,7 +233,8 @@ public class DetailActivity extends Activity {
         protected void onPostExecute(List<Comment> comments) {
             //videoAdapter = new VideoAdapter(DetailActivity.this, videos);
 
-            if (comments != null && !comments.equals("")) {
+            if (comments != null && !comments.equals(""))
+            {
 
                 //TODO set comment recycler view adapter
 
@@ -305,6 +254,62 @@ public class DetailActivity extends Activity {
             }
         }
     }
+
+
+    public class videoTask extends AsyncTask<String, Void, List<Video>> {
+
+        private Context context;
+
+        public videoTask(Context context) {
+            this.context = context;
+        }
+
+        List<Video> parsedList;
+
+
+        @Override
+        protected List<Video> doInBackground(String... strings) {
+
+            URL videosUrl = NetworkUtils.buildURL("videos", StringId);
+
+            try {
+
+                String jsonVideoResponse = NetworkUtils.getResponseFromHttpUrl(videosUrl);
+                parsedList = VideosJsonUtils.parseVideoJson(jsonVideoResponse);
+                Log.d("DetailActivity", jsonVideoResponse);
+                Log.i("DetailActivity", "list parsed "  + videosUrl);
+                return parsedList;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Video> videos) {
+
+
+
+            if (videos != null && !videos.equals("")) {
+                videoAdapter = new VideoAdapter(DetailActivity.this, videos);
+                trailersLstView.setAdapter(videoAdapter);
+                videoAdapter.notifyDataSetChanged();
+                updateListViewHeight(trailersLstView);
+
+                Log.i("DetailActivity", "Trailer ListView set");
+             } else {
+                Toast toast= Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
+                toast.show();
+            }
+
+        }
+    }
+
+
+
+
 
 
 
