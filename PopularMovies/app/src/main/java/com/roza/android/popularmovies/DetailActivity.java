@@ -1,8 +1,11 @@
 package com.roza.android.popularmovies;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,14 +21,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.like.LikeButton;
+import com.like.OnLikeListener;
+import com.roza.android.popularmovies.data.MovieContract;
+import com.roza.android.popularmovies.data.MovieDbHelper;
 import com.roza.android.popularmovies.utilities.CommentsJsonUtils;
 import com.roza.android.popularmovies.utilities.NetworkUtils;
 import com.roza.android.popularmovies.utilities.VideosJsonUtils;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,10 @@ public class DetailActivity extends Activity {
 
     private List<Comment> commentsList;
 
+    private LikeButton likeButton;
+
+    private static SQLiteDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -59,9 +67,12 @@ public class DetailActivity extends Activity {
         setContentView(R.layout.activity_detail);
 
         trailersLstView = findViewById(R.id.listView);
+
+
         configureClickListener();
         trailersLstView.setClickable(true);
 
+        likeButton = findViewById(R.id.heart_button);
 
         commentsList = new ArrayList<>();
 
@@ -69,6 +80,8 @@ public class DetailActivity extends Activity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+
+
 
         adapter = new CommentRecyclerViewAdapter(commentsList);
 
@@ -91,14 +104,36 @@ public class DetailActivity extends Activity {
 
 
 
-        String title = movie.getTitle();
+        final String title = movie.getTitle();
         String overview = movie.getOverview();
         double userRating = movie.getUserRating();
         String releaseDate = movie.getReleaseDate();
         String posterPath = movie.getPoster();
-        int id = movie.getId();
+        final int id = movie.getId();
         StringId = String.valueOf(id);;
 
+        //TODO jak już coś kurwa zalajkujesz serce powinno zostać czerwone a nie wracać po wróceniu do listy filmow do stanu pierwotnego. Zczytać z bazy czy jaki chuj
+        likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+
+                addMovieToDatabase(id, title);
+
+                likeButton.setLiked(true);
+
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+
+            }
+        });
+
+        //Create a database
+        MovieDbHelper dbHelper = new MovieDbHelper(this);
+
+        //for adding movies
+        mDb = dbHelper.getWritableDatabase();
 
         Log.i("DetailActivity.java", "" + title + + '\n' + overview + '\n' + userRating + '\n' + releaseDate + '\n' + posterPath + '\n' + StringId);
 
@@ -124,6 +159,8 @@ public class DetailActivity extends Activity {
 
 
         loadVideoData();
+
+
 
 
 
@@ -231,17 +268,9 @@ public class DetailActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<Comment> comments) {
-            //videoAdapter = new VideoAdapter(DetailActivity.this, videos);
 
             if (comments != null && !comments.equals(""))
             {
-
-                //TODO set comment recycler view adapter
-
-
-//                adapter = new CommentRecyclerViewAdapter(comments);
-//                recyclerView.setAdapter(adapter);
-
                 adapter = new CommentRecyclerViewAdapter(comments);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -308,6 +337,38 @@ public class DetailActivity extends Activity {
     }
 
 
+    //TODO 1 jeśli lista jest pusta zeby nie wyjebało aplikcji
+    //query mDb to get favourites from the table
+//    public static boolean isCursorEmpty() {
+//        if (cursor != null) {
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+//    }
+
+    public static Cursor getAllFavourites() {
+
+        return mDb.query(
+                MovieContract.MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry._ID);
+    }
+
+
+    private long addMovieToDatabase(int movieId, String movieTitle) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(MovieContract.MovieEntry.MOVIE_ID, movieId);
+        cv.put(MovieContract.MovieEntry.MOVIE_TITLE, movieTitle);
+
+        return mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+    }
 
 
 

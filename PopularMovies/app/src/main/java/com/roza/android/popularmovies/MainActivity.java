@@ -204,6 +204,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 SORT_ORDER = orderVoteAverage;
                loadMovieData();
                 return true;
+            case R.id.favourites:
+                Intent intent = new Intent(MainActivity.this, FavouritesActivity.class);
+                startActivity(intent);
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 

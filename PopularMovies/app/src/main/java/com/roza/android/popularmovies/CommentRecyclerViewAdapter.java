@@ -24,7 +24,7 @@ public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecy
         return new ViewHolder(view);
     }
 
-    //TODO onBind ogarnac
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
