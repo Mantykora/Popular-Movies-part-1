@@ -12,11 +12,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by hiddenpik on 11.03.2018.
- */
 
-public class VideoAdapter extends ArrayAdapter<Video>{
+
+public class VideoAdapter extends ArrayAdapter<Video> {
 
     public VideoAdapter(@NonNull Context context, List<Video> videos) {
         super(context, 0, videos);
@@ -40,7 +38,6 @@ public class VideoAdapter extends ArrayAdapter<Video>{
         TextView trailerTextView = convertView.findViewById(R.id.trailer_tv);
 
         trailerTextView.setText(video.getName());
-
 
 
         Log.i("DetailActivity.this", video.getName());

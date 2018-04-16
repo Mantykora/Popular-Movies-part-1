@@ -12,9 +12,6 @@ import com.roza.android.popularmovies.data.MovieContract;
 
 import java.util.List;
 
-/**
- * Created by hiddenpik on 29.03.2018.
- */
 
 public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.FavouritesViewHolder> {
 

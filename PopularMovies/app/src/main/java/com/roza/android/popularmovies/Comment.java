@@ -1,14 +1,11 @@
 package com.roza.android.popularmovies;
 
-/**
- * Created by hiddenpik on 17.03.2018.
- */
-
 public class Comment {
     private String content;
     private String author;
 
-    public Comment() {}
+    public Comment() {
+    }
 
     public Comment(String content, String author) {
         this.content = content;

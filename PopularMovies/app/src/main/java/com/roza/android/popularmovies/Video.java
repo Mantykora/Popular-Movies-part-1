@@ -1,9 +1,5 @@
 package com.roza.android.popularmovies;
 
-/**
- * Created by hiddenpik on 09.03.2018.
- */
-
 public class Video {
 
     String name;
@@ -28,7 +24,8 @@ public class Video {
     String content;
     String author;
 
-    public Video(){}
+    public Video() {
+    }
 
     public String getName() {
         return name;

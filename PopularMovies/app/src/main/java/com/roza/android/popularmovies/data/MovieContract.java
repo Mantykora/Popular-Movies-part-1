@@ -3,10 +3,6 @@ package com.roza.android.popularmovies.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * Created by hiddenpik on 25.03.2018.
- */
-
 public class MovieContract {
 
     public static final String CONTENT_AUTHORITY = "com.roza.android.popularmovies";
@@ -25,9 +21,7 @@ public class MovieContract {
 
         public static final String MOVIE_TITLE = "movieTitle";
 
-
-
-
+        public static final String MOVIE_LIKE = "movieLike";
 
 
     }

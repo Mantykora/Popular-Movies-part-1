@@ -11,9 +11,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by hiddenpik on 11.03.2018.
- */
 
 public class CommentAdapter extends ArrayAdapter<Video> {
 
@@ -34,8 +31,6 @@ public class CommentAdapter extends ArrayAdapter<Video> {
 
         TextView contentView = convertView.findViewById(R.id.coment_content_tv);
         TextView authorView = convertView.findViewById(R.id.coment_author_tv);
-
-
 
 
         return super.getView(position, convertView, parent);

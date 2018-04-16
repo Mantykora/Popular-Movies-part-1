@@ -9,10 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-/**
- * Created by hiddenpik on 02.04.2018.
- */
 
 public class MovieProvider extends ContentProvider {
 
@@ -25,11 +23,13 @@ public class MovieProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, MovieContract.PATH_MOVIES, CODE_MOVIES);
+        matcher.addURI(authority, MovieContract.PATH_MOVIES + "/#", CODE_ONE_MOVIE);
         return matcher;
 
     }
 
     MovieDbHelper mOpenHelper;
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new MovieDbHelper(getContext());
@@ -40,16 +40,42 @@ public class MovieProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
+        int match = uriMatcher.match(uri);
+        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-        cursor = mOpenHelper.getReadableDatabase().query(MovieContract.MovieEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                sortOrder);
+        switch (match) {
+            case CODE_MOVIES:
+                cursor = db.query(MovieContract.MovieEntry.TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_ONE_MOVIE:
+                String id = uri.getPathSegments().get(1);
+                String[] mSelectionArgs = new String[]{id};
+                String mSelection = MovieContract.MovieEntry._ID + " = ?";
+//
+                cursor = db.query(MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        mSelection,
+                        mSelectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
+
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+
+        }
+
 
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        Log.i("MovieProvider.java", "cursor query");
         return cursor;
     }
 
@@ -67,7 +93,7 @@ public class MovieProvider extends ContentProvider {
 
         Uri returnUri;
 
-        switch(match) {
+        switch (match) {
             case CODE_MOVIES:
                 long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, contentValues);
                 if (id > 0) {
@@ -79,26 +105,49 @@ public class MovieProvider extends ContentProvider {
 
                 break;
 
-                default:
-                    throw new UnsupportedOperationException("Unknown uri: " + uri);
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
 
         }
 
 
-
         getContext().getContentResolver().notifyChange(uri, null);
-
         return returnUri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        throw new RuntimeException("Not implementing delete now");
+
+
+        int match = uriMatcher.match(uri);
+        int tasksDeleted;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        switch (match) {
+            case CODE_ONE_MOVIE:
+
+
+                String id = uri.getPathSegments().get(1);
+                String mSelection = MovieContract.MovieEntry._ID + " = ?";
+                String[] mSelectionArgs = new String[]{id};
+
+                tasksDeleted = db.delete(MovieContract.MovieEntry.TABLE_NAME, mSelection, mSelectionArgs);
+
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (tasksDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return tasksDeleted;
 
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        throw new RuntimeException("Not implementing update now");
+        throw new RuntimeException("Not implementing update");
     }
 }

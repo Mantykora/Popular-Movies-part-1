@@ -10,11 +10,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by hiddenpik on 17.03.2018.
- */
-
-
 
 public final class CommentsJsonUtils {
 

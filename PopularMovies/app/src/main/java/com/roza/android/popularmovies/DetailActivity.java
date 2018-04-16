@@ -59,6 +59,10 @@ public class DetailActivity extends Activity {
 
     private static SQLiteDatabase mDb;
 
+    private int isLiked = 0;
+
+    private Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -76,32 +80,17 @@ public class DetailActivity extends Activity {
 
         commentsList = new ArrayList<>();
 
-        recyclerView =  findViewById(R.id.comment_rv);
+        recyclerView = findViewById(R.id.comment_rv);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
 
-
         adapter = new CommentRecyclerViewAdapter(commentsList);
-
-
-
-
-
-
-
-
-
 
 
         Intent intent = getIntent();
         Movie movie = intent.getParcelableExtra("movie");
-
-
-
-
-
 
 
         final String title = movie.getTitle();
@@ -110,14 +99,15 @@ public class DetailActivity extends Activity {
         String releaseDate = movie.getReleaseDate();
         String posterPath = movie.getPoster();
         final int id = movie.getId();
-        StringId = String.valueOf(id);;
+        StringId = String.valueOf(id);
 
-        //TODO jak już coś kurwa zalajkujesz serce powinno zostać czerwone a nie wracać po wróceniu do listy filmow do stanu pierwotnego. Zczytać z bazy czy jaki chuj
+
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
+                isLiked = 1;
 
-                addMovieToDatabase(id, title);
+                addMovieToDatabase(id, title, isLiked);
 
                 likeButton.setLiked(true);
 
@@ -125,9 +115,15 @@ public class DetailActivity extends Activity {
 
             @Override
             public void unLiked(LikeButton likeButton) {
+                isLiked = 0;
+
+                removeMovieFromDatabase();
+
+                likeButton.setLiked(false);
 
             }
         });
+
 
         //Create a database
         MovieDbHelper dbHelper = new MovieDbHelper(this);
@@ -135,7 +131,8 @@ public class DetailActivity extends Activity {
         //for adding movies
         mDb = dbHelper.getWritableDatabase();
 
-        Log.i("DetailActivity.java", "" + title + + '\n' + overview + '\n' + userRating + '\n' + releaseDate + '\n' + posterPath + '\n' + StringId);
+
+        Log.i("DetailActivity.java", "" + title + +'\n' + overview + '\n' + userRating + '\n' + releaseDate + '\n' + posterPath + '\n' + StringId);
 
         PosterUrlString = "http://image.tmdb.org/t/p/w185" + posterPath;
 
@@ -156,16 +153,36 @@ public class DetailActivity extends Activity {
         Picasso.with(this).load(PosterUrlString).into(posterView);
 
 
-
-
         loadVideoData();
 
+        cursor = getMovieWithId();
 
+        if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
+            int cursorInt = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.MOVIE_LIKE));
+            Log.i("detailCursor", "" + cursorInt);
+            if (cursorInt == 1) likeButton.setLiked(true);
 
-
+        }
 
 
     }
+
+
+    public Cursor getMovieWithId() {
+        Uri movieUri =
+                MovieContract.MovieEntry.CONTENT_URI
+                        .buildUpon()
+                        .appendPath(StringId)
+                        .build();
+
+        return getContentResolver().query(
+                movieUri,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry._ID);
+    }
+
 
     private void configureClickListener() {
         trailersLstView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,17 +192,7 @@ public class DetailActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
                 Log.i("DetailActivity", "click " + position);
-//                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 //
-//
-//                Movie movie = movieAdapter.getItem(position);
-//                intent.putExtra("movie", movie);
-//
-//                //https://www.101apps.co.za/index.php/articles/using-android-s-parcelable-class-a-tutorial.html I use this tutorial for parcelable implementation
-//
-//
-//                startActivity(intent);
-
                 Video video = videoAdapter.getItem(position);
                 String key = video.getKey();
                 String youtubeBaseUri = "http://youtu.be/";
@@ -194,9 +201,6 @@ public class DetailActivity extends Activity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeBaseUri + key));
 
                 Intent choser = Intent.createChooser(intent, "title");
-
-
-
 
 
                 if (intent.resolveActivity(getPackageManager()) != null) {
@@ -233,8 +237,10 @@ public class DetailActivity extends Activity {
         listView.setLayoutParams(params);
     }
 
-    private void loadVideoData() { new videoTask(this).execute();
-    new CommentTask(this).execute();}
+    private void loadVideoData() {
+        new videoTask(this).execute();
+        new CommentTask(this).execute();
+    }
 
     public class CommentTask extends AsyncTask<String, Void, List<Comment>> {
 
@@ -257,7 +263,7 @@ public class DetailActivity extends Activity {
                 String jsonCommentResponse = NetworkUtils.getResponseFromHttpUrl(commentsUrl);
                 parsedCommentList = CommentsJsonUtils.parseCommentJson(jsonCommentResponse);
                 Log.d("DetailActivity", jsonCommentResponse);
-                Log.i("DetailActivity", "list parsed "  + commentsUrl);
+                Log.i("DetailActivity", "list parsed " + commentsUrl);
                 return parsedCommentList;
 
             } catch (Exception e) {
@@ -269,8 +275,7 @@ public class DetailActivity extends Activity {
         @Override
         protected void onPostExecute(List<Comment> comments) {
 
-            if (comments != null && !comments.equals(""))
-            {
+            if (comments != null && !comments.equals("")) {
                 adapter = new CommentRecyclerViewAdapter(comments);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -278,7 +283,7 @@ public class DetailActivity extends Activity {
 
                 Log.i("DetailActivity", "RecyclerView set");
             } else {
-                Toast toast= Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -306,7 +311,7 @@ public class DetailActivity extends Activity {
                 String jsonVideoResponse = NetworkUtils.getResponseFromHttpUrl(videosUrl);
                 parsedList = VideosJsonUtils.parseVideoJson(jsonVideoResponse);
                 Log.d("DetailActivity", jsonVideoResponse);
-                Log.i("DetailActivity", "list parsed "  + videosUrl);
+                Log.i("DetailActivity", "list parsed " + videosUrl);
                 return parsedList;
 
             } catch (Exception e) {
@@ -320,7 +325,6 @@ public class DetailActivity extends Activity {
         protected void onPostExecute(List<Video> videos) {
 
 
-
             if (videos != null && !videos.equals("")) {
                 videoAdapter = new VideoAdapter(DetailActivity.this, videos);
                 trailersLstView.setAdapter(videoAdapter);
@@ -328,8 +332,8 @@ public class DetailActivity extends Activity {
                 updateListViewHeight(trailersLstView);
 
                 Log.i("DetailActivity", "Trailer ListView set");
-             } else {
-                Toast toast= Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
+            } else {
+                Toast toast = Toast.makeText(DetailActivity.this, "No internet connection", Toast.LENGTH_LONG);
                 toast.show();
             }
 
@@ -337,41 +341,31 @@ public class DetailActivity extends Activity {
     }
 
 
-    //TODO 1 jeśli lista jest pusta zeby nie wyjebało aplikcji
-    //query mDb to get favourites from the table
-//    public static boolean isCursorEmpty() {
-//        if (cursor != null) {
-//            return true;
-//        }
-//        else {
-//            return false;
-//        }
-//    }
-
-    public static Cursor getAllFavourites() {
-
-        return mDb.query(
-                MovieContract.MovieEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                MovieContract.MovieEntry._ID);
-    }
-
-
-    private long addMovieToDatabase(int movieId, String movieTitle) {
+    private void addMovieToDatabase(int movieId, String movieTitle, int movieLike) {
 
         ContentValues cv = new ContentValues();
-        cv.put(MovieContract.MovieEntry.MOVIE_ID, movieId);
+        cv.put(MovieContract.MovieEntry._ID, movieId);
         cv.put(MovieContract.MovieEntry.MOVIE_TITLE, movieTitle);
+        cv.put(MovieContract.MovieEntry.MOVIE_LIKE, movieLike);
 
-        return mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+        getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, cv);
+
+
+
     }
 
 
+    private int removeMovieFromDatabase() {
 
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI
+                .buildUpon()
+                .appendPath(StringId)
+                .build();
+
+        return getContentResolver().delete(uri, null, null);
+
+
+    }
 
 
 }

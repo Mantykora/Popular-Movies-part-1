@@ -4,15 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by hiddenpik on 25.03.2018.
- */
 
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "movies.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,9 +20,10 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " +
                 MovieContract.MovieEntry.TABLE_NAME + " (" +
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY," +
                 MovieContract.MovieEntry.MOVIE_ID + ", " +
-                MovieContract.MovieEntry.MOVIE_TITLE + ");";
+                MovieContract.MovieEntry.MOVIE_TITLE + ", " +
+                MovieContract.MovieEntry.MOVIE_LIKE + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
 

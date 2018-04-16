@@ -9,10 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by hiddenpik on 09.03.2018.
- */
-
 public final class VideosJsonUtils {
 
     public static List<Video> parseVideoJson(String json) throws JSONException {
@@ -27,7 +23,7 @@ public final class VideosJsonUtils {
 
         final List<Video> videos = new ArrayList<>();
 
-        for (int i = 0; i < resultsArray.length(); i++){
+        for (int i = 0; i < resultsArray.length(); i++) {
 
             Video video = new Video();
 

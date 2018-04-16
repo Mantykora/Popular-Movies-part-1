@@ -8,9 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-/**
- * Created by hiddenpik on 29.03.2018.
- */
+import com.roza.android.popularmovies.data.MovieContract;
+
 
 public class FavouritesActivity extends Activity {
 
@@ -31,14 +30,26 @@ public class FavouritesActivity extends Activity {
         favouritesRecyclerView = (RecyclerView) findViewById(R.id.favourites_rv);
         favouritesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Cursor cursor = DetailActivity.getAllFavourites();
-        //to nie działa, trzeba sprawdzic wczesniej
+
+        Cursor cursor = getAllFavourites();
+
 
         if (cursor != null) {
             mAdapter = new FavouritesAdapter(this, cursor);
             favouritesRecyclerView.setAdapter(mAdapter);
-        }  else
+        } else
             noFavTv.setVisibility(View.VISIBLE);
-            noFavTv.setText("No favourites yet...");
+        noFavTv.setText("No favourites yet...");
     }
+
+    public Cursor getAllFavourites() {
+
+        return getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry._ID);
+    }
+
+
 }

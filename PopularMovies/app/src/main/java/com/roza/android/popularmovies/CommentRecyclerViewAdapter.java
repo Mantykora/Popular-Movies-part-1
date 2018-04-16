@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by hiddenpik on 17.03.2018.
- */
 
 public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecyclerViewAdapter.ViewHolder> {
 
@@ -30,14 +27,11 @@ public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecy
 
         Comment comment = comments.get(position);
 
-        // holder.boundString = comments.get(position);
         holder.contentView.setText(comment.getContent());
         holder.authorView.setText(comment.getAuthor());
 
 
     }
-
-
 
 
     @Override
@@ -46,15 +40,14 @@ public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecy
         if (comments != null && !comments.isEmpty()) {
 
             return comments.size();
-        }
-        else {
+        } else {
             return 0;
         }
 
 
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public String boundString;
 
         public final TextView contentView;
