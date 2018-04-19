@@ -1,6 +1,6 @@
 package com.roza.android.popularmovies.utilities;
 
-import com.roza.android.popularmovies.Video;
+import com.roza.android.popularmovies.models.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;

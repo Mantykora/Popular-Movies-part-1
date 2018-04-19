@@ -1,4 +1,4 @@
-package com.roza.android.popularmovies;
+package com.roza.android.popularmovies.models;
 
 public class Video {
 

@@ -1,15 +1,10 @@
-package com.roza.android.popularmovies;
+package com.roza.android.popularmovies.models;
 
 public class Comment {
     private String content;
     private String author;
 
     public Comment() {
-    }
-
-    public Comment(String content, String author) {
-        this.content = content;
-        this.author = author;
     }
 
     public String getContent() {

@@ -23,8 +23,13 @@ import android.widget.Toast;
 
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.roza.android.popularmovies.adapters.CommentAdapter;
+import com.roza.android.popularmovies.adapters.VideoAdapter;
 import com.roza.android.popularmovies.data.MovieContract;
 import com.roza.android.popularmovies.data.MovieDbHelper;
+import com.roza.android.popularmovies.models.Comment;
+import com.roza.android.popularmovies.models.Movie;
+import com.roza.android.popularmovies.models.Video;
 import com.roza.android.popularmovies.utilities.CommentsJsonUtils;
 import com.roza.android.popularmovies.utilities.NetworkUtils;
 import com.roza.android.popularmovies.utilities.VideosJsonUtils;
@@ -86,7 +91,7 @@ public class DetailActivity extends Activity {
         recyclerView.setHasFixedSize(true);
 
 
-        adapter = new CommentRecyclerViewAdapter(commentsList);
+        adapter = new CommentAdapter(commentsList);
 
 
         Intent intent = getIntent();
@@ -276,7 +281,7 @@ public class DetailActivity extends Activity {
         protected void onPostExecute(List<Comment> comments) {
 
             if (comments != null && !comments.equals("")) {
-                adapter = new CommentRecyclerViewAdapter(comments);
+                adapter = new CommentAdapter(comments);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
 

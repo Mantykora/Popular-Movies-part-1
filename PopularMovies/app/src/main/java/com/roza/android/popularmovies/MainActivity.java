@@ -2,14 +2,10 @@ package com.roza.android.popularmovies;
 
 
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.app.ProgressDialog;
 import android.support.v4.content.AsyncTaskLoader;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.Loader;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +16,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.roza.android.popularmovies.utilities.JsonUtils;
+import com.roza.android.popularmovies.adapters.MovieAdapter;
+import com.roza.android.popularmovies.models.Movie;
+import com.roza.android.popularmovies.utilities.MovieJsonUtils;
 import com.roza.android.popularmovies.utilities.NetworkUtils;
 
 import java.net.URL;
@@ -32,8 +30,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     String orderVoteAverage = "top_rated";
     String SORT_ORDER = orderPopular;
     String MOVIE_ID = "";
+    List<Movie> moviesForPacelable;
 
     static private MovieAdapter movieAdapter;
+
+
     private static GridView gridView;
 
     @Override
@@ -44,9 +45,18 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
         gridView = findViewById(R.id.grid_view);
 
+
+
+
+
         loadMovieData();
 
 
+        if (savedInstanceState != null) {
+            gridView = savedInstanceState.getParcelable("movieParcelable");
+            new MovieAdapter(MainActivity.this, moviesForPacelable);
+
+        }
         getSupportLoaderManager().initLoader(0, null, this).forceLoad();
 
 
@@ -92,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
                 try {
                     String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieUrl);
-                    parsedList = JsonUtils.parseJson(jsonMovieResponse);
+                    parsedList = MovieJsonUtils.parseJson(jsonMovieResponse);
                     Log.i("MainActivity", "Json list parsed");
                     return parsedList;
                 } catch (Exception e) {
@@ -118,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             Toast toast = Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_LONG);
             toast.show();
         }
+        moviesForPacelable = movies;
     }
 
     @Override
@@ -154,6 +165,18 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
 
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+
+        outState.putParcelable("movieParcelable", gridView.onSaveInstanceState());
+//        outState.putParcelableArray("movieArrayList", moviesForPacelable);
+//        outState.putParcelableArrayList("movie", moviesForPacelable);
+
+
     }
 
 }
