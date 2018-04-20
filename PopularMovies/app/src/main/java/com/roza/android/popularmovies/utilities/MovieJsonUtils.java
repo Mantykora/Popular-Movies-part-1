@@ -11,7 +11,7 @@ import java.util.List;
 
 public final class MovieJsonUtils {
 
-    public static List<Movie> parseJson(String json) throws JSONException {
+    public static ArrayList<Movie> parseJson(String json) throws JSONException {
 
         final String ORIGINAL_TITLE = "original_title";
         final String MOVIE_POSTER = "poster_path";
@@ -26,7 +26,7 @@ public final class MovieJsonUtils {
 
         JSONArray resultsArray = allMoviesObject.getJSONArray(RESULTS);
 
-        final List<Movie> movies = new ArrayList<>();
+        final ArrayList<Movie> movies = new ArrayList<>();
         for (int i = 0; i < resultsArray.length(); i++) {
 
             Movie movie = new Movie();

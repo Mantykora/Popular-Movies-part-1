@@ -22,15 +22,16 @@ import com.roza.android.popularmovies.utilities.MovieJsonUtils;
 import com.roza.android.popularmovies.utilities.NetworkUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<Movie>> {
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<ArrayList<Movie>> {
 
     String orderPopular = "popular";
     String orderVoteAverage = "top_rated";
     String SORT_ORDER = orderPopular;
     String MOVIE_ID = "";
-    List<Movie> moviesForPacelable;
+    ArrayList<Movie> moviesForPacelable;
 
     static private MovieAdapter movieAdapter;
 
@@ -53,8 +54,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
 
         if (savedInstanceState != null) {
-            gridView = savedInstanceState.getParcelable("movieParcelable");
-            new MovieAdapter(MainActivity.this, moviesForPacelable);
+
+            moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
+            Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
+            MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
+            gridView.setAdapter(adapter);
 
         }
         getSupportLoaderManager().initLoader(0, null, this).forceLoad();
@@ -85,15 +89,15 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     }
 
     @Override
-    public Loader<List<Movie>> onCreateLoader(int i, Bundle bundle) {
+    public Loader<ArrayList<Movie>> onCreateLoader(int i, Bundle bundle) {
 
 
-        return new AsyncTaskLoader<List<Movie>>(this) {
+        return new AsyncTaskLoader<ArrayList<Movie>>(this) {
 
-            List<Movie> parsedList;
+            ArrayList<Movie> parsedList;
 
             @Override
-            public List<Movie> loadInBackground() {
+            public ArrayList<Movie> loadInBackground() {
 
                 Log.d("MainActivity", "Load in background");
                 URL movieUrl = NetworkUtils.buildURL(SORT_ORDER, MOVIE_ID);
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movies) {
+    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> movies) {
 
         movieAdapter = new MovieAdapter(MainActivity.this, movies);
         if (movies != null && !movies.equals("")) {
@@ -132,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
+    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
 
     }
 
@@ -169,13 +173,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putParcelableArrayList("movies", moviesForPacelable);
         super.onSaveInstanceState(outState);
-
-
-        outState.putParcelable("movieParcelable", gridView.onSaveInstanceState());
-//        outState.putParcelableArray("movieArrayList", moviesForPacelable);
-//        outState.putParcelableArrayList("movie", moviesForPacelable);
-
 
     }
 

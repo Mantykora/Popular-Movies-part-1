@@ -1,4 +1,4 @@
-package com.roza.android.popularmovies;
+package com.roza.android.popularmovies.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,9 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.roza.android.popularmovies.R;
 import com.roza.android.popularmovies.data.MovieContract;
-
-import java.util.List;
 
 
 public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.FavouritesViewHolder> {

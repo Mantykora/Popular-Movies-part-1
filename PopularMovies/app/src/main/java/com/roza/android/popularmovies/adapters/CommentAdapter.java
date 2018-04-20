@@ -6,13 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.roza.android.popularmovies.Comment;
+import com.roza.android.popularmovies.models.Comment;
 import com.roza.android.popularmovies.R;
 
 import java.util.List;
 
 
-public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecyclerViewAdapter.ViewHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
 
     private List<Comment> comments;
 
@@ -63,7 +63,7 @@ public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<CommentRecy
         }
     }
 
-    public CommentRecyclerViewAdapter(List<Comment> items) {
+    public CommentAdapter(List<Comment> items) {
         comments = items;
     }
 }
