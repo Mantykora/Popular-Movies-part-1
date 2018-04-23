@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -68,6 +69,8 @@ public class DetailActivity extends Activity {
 
     private Cursor cursor;
 
+    private Movie movie;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -95,7 +98,7 @@ public class DetailActivity extends Activity {
 
 
         Intent intent = getIntent();
-        Movie movie = intent.getParcelableExtra("movie");
+        movie = intent.getParcelableExtra("movie");
 
 
         final String title = movie.getTitle();
@@ -105,6 +108,21 @@ public class DetailActivity extends Activity {
         String posterPath = movie.getPoster();
         final int id = movie.getId();
         StringId = String.valueOf(id);
+
+//        if (savedInstanceState != null) {
+//
+//            Movie movieFromParcelable = savedInstanceState.getParcelable("movieParcelable");
+//            Log.i("DetailActivity.java", "" + movieFromParcelable);
+//
+//            titleTv.setText(movieFromParcelable.getTitle());
+//            userRatingTv.setText(Double.toString(movieFromParcelable.getUserRating()));
+//            releaseDateTv.setText(movieFromParcelable.getReleaseDate());
+//            overviewTv.setText(movieFromParcelable.getOverview());
+//            String posterUrl = "http://image.tmdb.org/t/p/w185" + movieFromParcelable.getPoster();
+//            Picasso.with(this).load(posterUrl).into(posterView);
+//
+//
+//        }
 
 
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -158,6 +176,8 @@ public class DetailActivity extends Activity {
         Picasso.with(this).load(PosterUrlString).into(posterView);
 
 
+
+
         loadVideoData();
 
         cursor = getMovieWithId();
@@ -168,6 +188,7 @@ public class DetailActivity extends Activity {
             if (cursorInt == 1) likeButton.setLiked(true);
 
         }
+
 
 
     }
@@ -370,6 +391,37 @@ public class DetailActivity extends Activity {
         return getContentResolver().delete(uri, null, null);
 
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putParcelable("movieParcelable", movie);
+        Log.i("DetailActivity", "" + movie);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Movie movieFromParcelable = savedInstanceState.getParcelable("movieParcelable");
+        Log.i("DetailActivity.java", "retore movie: " + movieFromParcelable);
+
+        titleTv.setText(movieFromParcelable.getTitle());
+        userRatingTv.setText(Double.toString(movieFromParcelable.getUserRating()));
+        releaseDateTv.setText(movieFromParcelable.getReleaseDate());
+        overviewTv.setText(movieFromParcelable.getOverview());
+        String posterUrl = "http://image.tmdb.org/t/p/w185" + movieFromParcelable.getPoster();
+       Picasso.with(this).load(posterUrl).into(posterView);
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i("DetailActivity", "restart!");
     }
 
 

@@ -47,20 +47,19 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
         gridView = findViewById(R.id.grid_view);
 
 
-
-
-
         loadMovieData();
 
 
-        if (savedInstanceState != null) {
-
-            moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
-            Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
-            MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
-            gridView.setAdapter(adapter);
-
-        }
+//        if (savedInstanceState != null) {
+//
+//            moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
+//            Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
+//            MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
+//            if (adapter != null) {
+//                gridView.setAdapter(adapter);
+//            }
+//
+//        }
         getSupportLoaderManager().initLoader(0, null, this).forceLoad();
 
 
@@ -173,10 +172,23 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
-        outState.putParcelableArrayList("movies", moviesForPacelable);
         super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("movies", moviesForPacelable);
+
 
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
+        Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
+        MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
+        if (adapter != null) {
+            gridView.setAdapter(adapter);
+
+        }
+
+    }
 }
