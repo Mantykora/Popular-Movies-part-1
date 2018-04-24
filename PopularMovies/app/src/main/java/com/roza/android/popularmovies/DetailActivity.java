@@ -109,20 +109,7 @@ public class DetailActivity extends Activity {
         final int id = movie.getId();
         StringId = String.valueOf(id);
 
-//        if (savedInstanceState != null) {
-//
-//            Movie movieFromParcelable = savedInstanceState.getParcelable("movieParcelable");
-//            Log.i("DetailActivity.java", "" + movieFromParcelable);
-//
-//            titleTv.setText(movieFromParcelable.getTitle());
-//            userRatingTv.setText(Double.toString(movieFromParcelable.getUserRating()));
-//            releaseDateTv.setText(movieFromParcelable.getReleaseDate());
-//            overviewTv.setText(movieFromParcelable.getOverview());
-//            String posterUrl = "http://image.tmdb.org/t/p/w185" + movieFromParcelable.getPoster();
-//            Picasso.with(this).load(posterUrl).into(posterView);
-//
-//
-//        }
+
 
 
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -390,31 +377,6 @@ public class DetailActivity extends Activity {
 
         return getContentResolver().delete(uri, null, null);
 
-
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        outState.putParcelable("movieParcelable", movie);
-        Log.i("DetailActivity", "" + movie);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-
-        super.onRestoreInstanceState(savedInstanceState);
-
-        Movie movieFromParcelable = savedInstanceState.getParcelable("movieParcelable");
-        Log.i("DetailActivity.java", "retore movie: " + movieFromParcelable);
-
-        titleTv.setText(movieFromParcelable.getTitle());
-        userRatingTv.setText(Double.toString(movieFromParcelable.getUserRating()));
-        releaseDateTv.setText(movieFromParcelable.getReleaseDate());
-        overviewTv.setText(movieFromParcelable.getOverview());
-        String posterUrl = "http://image.tmdb.org/t/p/w185" + movieFromParcelable.getPoster();
-       Picasso.with(this).load(posterUrl).into(posterView);
 
     }
 
