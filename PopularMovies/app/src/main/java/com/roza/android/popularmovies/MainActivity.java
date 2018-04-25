@@ -1,6 +1,7 @@
 package com.roza.android.popularmovies;
 
 
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Intent;
@@ -50,16 +51,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
         loadMovieData();
 
 
-//        if (savedInstanceState != null) {
-//
-//            moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
-//            Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
-//            MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
-//            if (adapter != null) {
-//                gridView.setAdapter(adapter);
-//            }
-//
-//        }
+
         getSupportLoaderManager().initLoader(0, null, this).forceLoad();
 
 
@@ -168,13 +160,16 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
 
 
         }
+
+
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("movies", moviesForPacelable);
-
+        outState.putInt("moviesPosition", gridView.getFirstVisiblePosition());
 
     }
 
@@ -183,10 +178,14 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
         super.onRestoreInstanceState(savedInstanceState);
 
         moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
+        int moviesPosition = savedInstanceState.getInt("moviesPosition");
         Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
         MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
         if (adapter != null) {
+            Log.i("MainActivity","" + moviesPosition);
             gridView.setAdapter(adapter);
+            gridView.setSelection(moviesPosition);
+
 
         }
 
