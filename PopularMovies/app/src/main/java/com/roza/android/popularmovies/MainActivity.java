@@ -40,19 +40,16 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
     private static GridView gridView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
         gridView = findViewById(R.id.grid_view);
 
-
-        loadMovieData();
-
-
-
-        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+        if (savedInstanceState == null) {
+            loadMovieData();
+        }
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -61,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 
 
-                Movie movie = movieAdapter.getItem(position);
-                intent.putExtra("movie", movie);
+                    Movie movie = movieAdapter.getItem(position);
+                    intent.putExtra("movie", movie);
 
                 //https://www.101apps.co.za/index.php/articles/using-android-s-parcelable-class-a-tutorial.html I used this tutorial for parcelable implementation
 
@@ -180,14 +177,18 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<A
         moviesForPacelable = savedInstanceState.getParcelableArrayList("movies");
         int moviesPosition = savedInstanceState.getInt("moviesPosition");
         Log.i("MainActivity", "Saved instance state" + moviesForPacelable);
-        MovieAdapter adapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
-        if (adapter != null) {
-            Log.i("MainActivity","" + moviesPosition);
-            gridView.setAdapter(adapter);
-            gridView.setSelection(moviesPosition);
+        movieAdapter = new MovieAdapter(MainActivity.this, moviesForPacelable);
 
+            Log.i("MainActivity","" + moviesPosition);
+            gridView.setAdapter(movieAdapter);
+            gridView.setSelection(moviesPosition);
 
         }
 
+
+    @Override
+    protected void onRestart() {
+        getSupportLoaderManager().restartLoader(0, null, this);
+        super.onRestart();
     }
 }
